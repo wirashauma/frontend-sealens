@@ -1,8 +1,18 @@
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, MapPin, Share2, Waves } from "lucide-react";
 
-// Data Dummy Berita (Nanti bisa diganti dengan fetch API/Database)
-const ARTICLES_DB: Record<string, any> = {
+interface Article {
+  title: string;
+  category: string;
+  date: string;
+  readTime: string;
+  location: string;
+  author: string;
+  heroImage: string;
+  content: string[];
+}
+
+const ARTICLES_DB: Record<string, Article> = {
   "1": {
     title: "Pemutihan Karang Mentawai Semakin Kritis",
     category: "Krisis Iklim",
@@ -47,10 +57,12 @@ const ARTICLES_DB: Record<string, any> = {
   }
 };
 
-export default function ArticleDetail({ params }: { params: { id: string } }) {
-  const article = ARTICLES_DB[params.id];
+// REVISI: Mengubah fungsi menjadi async dan params menjadi Promise
+export default async function ArticleDetail({ params }: { params: Promise<{ id: string }> }) {
+  // REVISI: Menunggu (await) params selesai dibaca oleh Next.js
+  const resolvedParams = await params;
+  const article = ARTICLES_DB[resolvedParams.id];
 
-  // Jika ID artikel tidak ditemukan
   if (!article) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col gap-4">
@@ -64,7 +76,7 @@ export default function ArticleDetail({ params }: { params: { id: string } }) {
 
   return (
     <main className="font-sans antialiased bg-white text-gray-900 min-h-screen">
-      {/* NAVBAR SIMPLE (Solid Background) */}
+      {/* NAVBAR SIMPLE */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-8 py-4 bg-gray-950 border-b border-gray-800">
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
           <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white/10 group-hover:bg-white/20 transition">
@@ -74,7 +86,7 @@ export default function ArticleDetail({ params }: { params: { id: string } }) {
             Sea Lens
           </span>
         </Link>
-        <Link href="/" className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-2 transition">
+        <Link href="/#liputan" className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-2 transition">
           <ArrowLeft size={16} /> <span className="hidden sm:inline">Kembali</span>
         </Link>
       </nav>
@@ -144,7 +156,7 @@ export default function ArticleDetail({ params }: { params: { id: string } }) {
           ))}
         </div>
 
-        {/* GAMBAR TAMBAHAN (Hanya Contoh Desain) */}
+        {/* GAMBAR TAMBAHAN */}
         <div className="grid grid-cols-2 gap-4 mt-12 mb-8">
           <img src="/images/nelayan.png" alt="Dokumentasi 1" className="rounded-2xl w-full h-48 md:h-64 object-cover" />
           <img src="/images/og-image.png" alt="Dokumentasi 2" className="rounded-2xl w-full h-48 md:h-64 object-cover" />
