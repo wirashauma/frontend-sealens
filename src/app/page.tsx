@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+// REVISI: Import Link dari next/link
+import Link from "next/link";
 import {
   Search,
   ChevronDown,
@@ -639,7 +641,7 @@ function ReportsSection({ onComingSoon }: { onComingSoon: () => void }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {(filtered.length > 0 ? filtered : REPORT_CARDS).map((card) => (
-          <ReportCard key={card.id} card={card} onComingSoon={onComingSoon} />
+          <ReportCard key={card.id} card={card} />
         ))}
       </div>
 
@@ -655,11 +657,13 @@ function ReportsSection({ onComingSoon }: { onComingSoon: () => void }) {
   );
 }
 
-function ReportCard({ card, onComingSoon }: { card: ReportCard, onComingSoon: () => void }) {
+// REVISI: Menggunakan tag <Link> dari next/link agar kartu dapat diklik 
+// dan mengarahkan ke halaman detail (menghapus properti onComingSoon).
+function ReportCard({ card }: { card: ReportCard }) {
   return (
-    <div 
-      onClick={onComingSoon}
-      className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col h-full"
+    <Link 
+      href={`/liputan/${card.id}`}
+      className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col h-full block"
     >
       <div className="relative h-52 sm:h-56 overflow-hidden shrink-0">
         <img
@@ -703,7 +707,7 @@ function ReportCard({ card, onComingSoon }: { card: ReportCard, onComingSoon: ()
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -771,8 +775,7 @@ function Footer({ onComingSoon }: { onComingSoon: () => void }) {
         </div>
         
         <p className="text-xs text-center order-3 md:order-2 px-4 md:px-0">
-          © 2026 Sea Lens Project · Jurnalisme Partisipatif Ekosistem Laut
-          Sumatera Barat
+          © 2026 Sea Lens Project · Jurnalisme Partisipatif Ekosistem Laut Sumatera Barat
         </p>
         
         <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs order-2 md:order-3">
