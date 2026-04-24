@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sealensproject.com";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,16 +15,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Sea Lens Project",
   description: "Ekspedisi jurnalisme partisipatif mengangkat krisis ekosistem laut di Sumatera Barat.",
   openGraph: {
     title: "Sea Lens Project",
     description: "Ekspedisi jurnalisme partisipatif mengangkat krisis ekosistem laut di Sumatera Barat.",
-    url: "https://sealensproject.com", // Ganti dengan URL website aslimu nanti jika sudah di-hosting
+    url: "/",
     siteName: "Sea Lens Project",
     images: [
       {
-        url: "/images/og-image.png", // Pastikan ekstensi file sesuai (.png / .jpg / .jpeg)
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Sea Lens Project - Open Graph Image",
@@ -35,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sea Lens Project",
     description: "Ekspedisi jurnalisme partisipatif mengangkat krisis ekosistem laut di Sumatera Barat.",
-    images: ["/images/og-image.png"], // Pastikan ekstensi file sesuai
+    images: ["/images/og-image.png"],
   },
 };
 
