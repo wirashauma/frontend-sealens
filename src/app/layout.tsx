@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sea Lens Project",
     description: "Ekspedisi jurnalisme partisipatif mengangkat krisis ekosistem laut di Sumatera Barat.",
-    images: ["/images/og-image.png"],
+    images: ["public/images/og-image.png"],
   },
 };
 
