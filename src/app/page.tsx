@@ -19,6 +19,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -156,44 +157,86 @@ const REPORT_CARDS: ReportCard[] = [
   },
 ];
 
+// ─── Animation Variants ──────────────────────────────────────────────────────
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const scaleIn: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
+};
+
 // ─── Komponen Popup "Coming Soon" ─────────────────────────────────────────────
 
 function ComingSoonPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div 
-        className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-      <div className="relative bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-full p-2 transition"
-        >
-          <X size={16} />
-        </button>
-        
-        <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-5 border-4 border-teal-100 shrink-0">
-          <Wrench size={26} className="text-teal-600" />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl flex flex-col items-center text-center"
+          >
+            <button 
+              onClick={onClose} 
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-full p-2 transition"
+            >
+              <X size={16} />
+            </button>
+            
+            <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-5 border-4 border-teal-100 shrink-0">
+              <Wrench size={26} className="text-teal-600" />
+            </div>
+            
+            <h3 className="text-2xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+              Segera Hadir
+            </h3>
+            <p className="text-gray-500 text-sm leading-relaxed mb-8 px-2">
+              Halaman atau fitur ini masih dalam tahap pengembangan. Silakan kembali lagi nanti untuk melihat pembaruan.
+            </p>
+            
+            <button 
+              onClick={onClose} 
+              className="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition"
+            >
+              Mengerti
+            </button>
+          </motion.div>
         </div>
-        
-        <h3 className="text-2xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
-          Segera Hadir
-        </h3>
-        <p className="text-gray-500 text-sm leading-relaxed mb-8 px-2">
-          Halaman atau fitur ini masih dalam tahap pengembangan. Silakan kembali lagi nanti untuk melihat pembaruan.
-        </p>
-        
-        <button 
-          onClick={onClose} 
-          className="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition"
-        >
-          Mengerti
-        </button>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -203,7 +246,12 @@ function Navbar({ onComingSoon }: { onComingSoon: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-8 py-5">
+    <motion.nav 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-8 py-5"
+    >
       <div className="flex items-center gap-3 shrink-0">
         <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center">
           <img 
@@ -279,25 +327,37 @@ function Navbar({ onComingSoon }: { onComingSoon: () => void }) {
           })}
         </div>
       )}
-    </nav>
+    </motion.nav>
   );
 }
 
 function HeroSection() {
   return (
     <section className="relative h-[100svh] min-h-[600px] flex flex-col justify-center items-center text-center overflow-hidden">
-      <img
+      <motion.img
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 2.5, ease: "easeOut" }}
         src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1800&q=90"
         alt="Ocean background"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
 
-      <div className="relative z-10 px-4 md:px-6 max-w-4xl w-full">
-        <p className="text-white/70 text-xs sm:text-sm font-medium tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-4 sm:mb-6">
-          Ekspedisi Jurnalisme Partisipatif · 2026
-        </p>
-        <h1
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 px-4 md:px-6 max-w-4xl w-full"
+      >
+        <motion.p 
+          variants={fadeInUp}
+          className="text-white/70 text-xs sm:text-sm font-medium tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-4 sm:mb-6"
+        >
+          Ekspedisi Resonansi Bahari • 2026
+        </motion.p>
+        <motion.h1
+          variants={fadeInUp}
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight sm:leading-none mb-6"
           style={{ fontFamily: "'Georgia', serif" }}
         >
@@ -305,12 +365,18 @@ function HeroSection() {
           <br className="hidden sm:block" />
           <span className="sm:hidden"> </span>
           <span className="text-[#7DD3C4]">Project</span>
-        </h1>
-        <p className="text-white/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto font-light">
-          Menyelam untuk bersuara. Ekspedisi jurnalisme partisipatif mengangkat
+        </motion.h1>
+        <motion.p 
+          variants={fadeInUp}
+          className="text-white/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto font-light"
+        >
+          Menyelam untuk bersuara. Ekspedisi jurnalisme partisipatif mengungkap
           krisis ekosistem laut di Sumatera Barat.
-        </p>
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        </motion.p>
+        <motion.div 
+          variants={fadeInUp}
+          className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
           <a
             href="#liputan"
             className="w-full sm:w-auto bg-white text-gray-900 font-semibold px-6 py-3.5 rounded-full text-sm hover:bg-gray-100 transition flex items-center justify-center gap-2"
@@ -323,10 +389,15 @@ function HeroSection() {
           >
             Tentang Proyek
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-10 bg-black/40 backdrop-blur-md border-t border-white/10 pt-4 pb-20 lg:pb-16 px-4 md:px-6 text-white/80 text-xs sm:text-sm">
+      <motion.div 
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+        className="absolute bottom-0 left-0 right-0 z-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-10 bg-black/40 backdrop-blur-md border-t border-white/10 pt-4 pb-20 lg:pb-16 px-4 md:px-6 text-white/80 text-xs sm:text-sm"
+      >
         <div className="flex items-center gap-2">
           <Camera size={14} className="text-[#7DD3C4] shrink-0" />
           <span>12 Liputan Terbit</span>
@@ -341,7 +412,7 @@ function HeroSection() {
           <MapPin size={14} className="text-[#7DD3C4] shrink-0" />
           <span>5 Lokasi Pesisir</span>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -362,7 +433,14 @@ function FilterBar({ onComingSoon }: { onComingSoon: () => void }) {
   }, []);
 
   return (
-    <div className="relative z-30 mx-4 lg:mx-12 -mt-10 md:-mt-8" ref={dropdownRef}>
+    <motion.div 
+      initial={{ y: 20, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: 0.5 }}
+      className="relative z-30 mx-4 lg:mx-12 -mt-10 md:-mt-8" 
+      ref={dropdownRef}
+    >
       <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl shadow-gray-200/80 flex flex-col lg:flex-row items-stretch lg:items-center overflow-visible lg:overflow-hidden border border-gray-100">
         {FILTER_OPTIONS.map((filter, i) => {
           const isOpen = openDropdown === filter.label;
@@ -401,41 +479,48 @@ function FilterBar({ onComingSoon }: { onComingSoon: () => void }) {
                 </div>
               </div>
 
-              {isOpen && (
-                <div className="absolute top-full left-0 right-0 lg:right-auto lg:min-w-[240px] mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 py-2">
-                  {filter.options.map((opt) => (
-                    <div
-                      key={opt}
-                      onClick={() => {
-                        setSelections((prev) => ({ ...prev, [filter.label]: opt }));
-                        setOpenDropdown(null);
-                      }}
-                      className={`px-5 py-3 text-sm cursor-pointer transition flex justify-between items-center ${
-                        selectedValue === opt
-                          ? "bg-teal-50 text-teal-700 font-semibold"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    >
-                      {opt}
-                    </div>
-                  ))}
-                  {selectedValue && (
-                    <div
-                      onClick={() => {
-                        setSelections((prev) => {
-                          const newSelections = { ...prev };
-                          delete newSelections[filter.label];
-                          return newSelections;
-                        });
-                        setOpenDropdown(null);
-                      }}
-                      className="px-5 py-3 mt-1 border-t border-gray-100 text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer transition"
-                    >
-                      Reset Pilihan
-                    </div>
-                  )}
-                </div>
-              )}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full left-0 right-0 lg:right-auto lg:min-w-[240px] mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 py-2"
+                  >
+                    {filter.options.map((opt) => (
+                      <div
+                        key={opt}
+                        onClick={() => {
+                          setSelections((prev) => ({ ...prev, [filter.label]: opt }));
+                          setOpenDropdown(null);
+                        }}
+                        className={`px-5 py-3 text-sm cursor-pointer transition flex justify-between items-center ${
+                          selectedValue === opt
+                            ? "bg-teal-50 text-teal-700 font-semibold"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        }`}
+                      >
+                        {opt}
+                      </div>
+                    ))}
+                    {selectedValue && (
+                      <div
+                        onClick={() => {
+                          setSelections((prev) => {
+                            const newSelections = { ...prev };
+                            delete newSelections[filter.label];
+                            return newSelections;
+                          });
+                          setOpenDropdown(null);
+                        }}
+                        className="px-5 py-3 mt-1 border-t border-gray-100 text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer transition"
+                      >
+                        Reset Pilihan
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
@@ -449,15 +534,21 @@ function FilterBar({ onComingSoon }: { onComingSoon: () => void }) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
   return (
-    <section id="tentang" className="py-16 md:py-24 px-5 md:px-8 lg:px-12 bg-white">
-      <div className="flex flex-col lg:flex-row justify-between items-start gap-6 md:gap-8 mb-12 lg:mb-16 border-b border-gray-100 pb-10 lg:pb-12">
-        <div className="lg:w-1/2">
+    <section id="tentang" className="py-16 md:py-24 px-5 md:px-8 lg:px-12 bg-white overflow-hidden">
+      <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+        className="flex flex-col lg:flex-row justify-between items-start gap-6 md:gap-8 mb-12 lg:mb-16 border-b border-gray-100 pb-10 lg:pb-12"
+      >
+        <motion.div variants={fadeInUp} className="lg:w-1/2">
           <div className="inline-flex items-center gap-2 bg-teal-50 border border-teal-200 rounded-full px-4 py-1.5 mb-5">
             <div className="w-1.5 h-1.5 rounded-full bg-teal-500" />
             <span className="text-teal-700 text-xs font-semibold tracking-wide">
@@ -468,16 +559,15 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
             className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight"
             style={{ fontFamily: "'Georgia', serif" }}
           >
-            Bukan Sekadar <br className="hidden md:block"/> Jurnalisme Biasa
+            Sea Lens: Membawa Resonansi Bahari ke Permukaan
           </h2>
-        </div>
+        </motion.div>
         
-        <div className="lg:w-1/2 lg:pt-12">
+        <motion.div variants={fadeInUp} className="lg:w-1/2 lg:pt-12">
           <p className="text-gray-600 text-base leading-relaxed mb-6 md:text-justify">
-            Kami percaya kebenaran ada di lapangan — di bawah permukaan laut,
-            di perahu nelayan, dan di mulut komunitas yang terdampak. Kami berkolaborasi dengan komunitas lokal untuk mendokumentasikan
-            dan mencari solusi atas krisis pesisir yang selama ini luput dari
-            sorotan media nasional.
+            Kami percaya kebenaran ada di lapangan. Melalui ekspedisi Resonansi Bahari, 
+            Sea Lens berkolaborasi dengan komunitas lokal untuk mendokumentasikan 
+            krisis pesisir yang selama ini luput dari sorotan media nasional.
           </p>
           <button 
             onClick={onComingSoon}
@@ -485,14 +575,20 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
           >
             Pelajari Lebih Lanjut <ArrowRight size={15} />
           </button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-stretch">
-        <div className="lg:w-1/3 flex flex-col justify-center order-2 lg:order-1">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-teal-500 pl-4">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="lg:w-1/3 flex flex-col justify-center order-2 lg:order-1"
+        >
+          <motion.h3 variants={fadeInUp} className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-teal-500 pl-4">
             Pencapaian Ekspedisi
-          </h3>
+          </motion.h3>
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[
               { icon: <Waves size={20} />, value: "3", label: "Lokasi Menyelam" },
@@ -500,21 +596,31 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
               { icon: <Users size={20} />, value: "40+", label: "Narasumber" },
               { icon: <BookOpen size={20} />, value: "12", label: "Artikel Terbit" },
             ].map((stat) => (
-              <div
+              <motion.div
+                variants={fadeInUp}
                 key={stat.label}
                 className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-100 hover:shadow-md transition"
               >
                 <div className="text-teal-600 mb-3 bg-teal-100 w-fit p-2 rounded-lg">{stat.icon}</div>
                 <p className="text-2xl sm:text-3xl font-black text-gray-900">{stat.value}</p>
                 <p className="text-gray-500 text-xs sm:text-sm mt-1">{stat.label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:min-h-[450px] order-1 lg:order-2">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:min-h-[450px] order-1 lg:order-2"
+        >
           {/* Gambar Besar Kiri */}
-          <div className="relative rounded-2xl overflow-hidden sm:row-span-2 group h-[250px] sm:h-full">
+          <motion.div 
+            variants={scaleIn}
+            className="relative rounded-2xl overflow-hidden sm:row-span-2 group h-[250px] sm:h-full"
+          >
             <img
               src={GALLERY_IMAGES[0].src}
               alt={GALLERY_IMAGES[0].caption}
@@ -526,10 +632,13 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
                 <MapPin size={14}/> {GALLERY_IMAGES[0].location}
               </p>
             </div>
-          </div>
+          </motion.div>
           
           {/* Gambar Kecil Kanan Atas */}
-          <div className="relative rounded-2xl overflow-hidden h-[160px] sm:h-auto group">
+          <motion.div 
+            variants={scaleIn}
+            className="relative rounded-2xl overflow-hidden h-[160px] sm:h-auto group"
+          >
             <img
               src={GALLERY_IMAGES[1].src}
               alt={GALLERY_IMAGES[1].caption}
@@ -538,10 +647,13 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 sm:p-5">
               <p className="text-white font-bold text-sm sm:text-base">{GALLERY_IMAGES[1].caption}</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Gambar Kecil Kanan Bawah */}
-          <div className="relative rounded-2xl overflow-hidden h-[160px] sm:h-auto group">
+          <motion.div 
+            variants={scaleIn}
+            className="relative rounded-2xl overflow-hidden h-[160px] sm:h-auto group"
+          >
             <img
               src={GALLERY_IMAGES[2].src}
               alt={GALLERY_IMAGES[2].caption}
@@ -550,8 +662,8 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 sm:p-5">
               <p className="text-white font-bold text-sm sm:text-base">{GALLERY_IMAGES[2].caption}</p>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
       </div>
     </section>
@@ -560,7 +672,13 @@ function AboutSection({ onComingSoon }: { onComingSoon: () => void }) {
 
 function TrustBar() {
   return (
-    <div className="bg-gray-50 border-y border-gray-100 py-6 px-5 md:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+      className="bg-gray-50 border-y border-gray-100 py-6 px-5 md:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6"
+    >
       <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-teal-500 flex items-center justify-center">
@@ -581,7 +699,7 @@ function TrustBar() {
         <span className="hidden lg:block text-gray-300">·</span>
         <span className="hidden lg:block">Terverifikasi oleh LSM</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -596,8 +714,14 @@ function ReportsSection({ onComingSoon }: { onComingSoon: () => void }) {
 
   return (
     <section id="liputan" className="py-16 md:py-24 px-5 md:px-8 lg:px-12 bg-white">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 lg:mb-12">
-        <div className="md:w-1/2">
+      <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+        className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 lg:mb-12"
+      >
+        <motion.div variants={fadeInUp} className="md:w-1/2">
           <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-1.5 mb-5">
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
             <span className="text-blue-700 text-xs font-semibold tracking-wide">
@@ -608,20 +732,25 @@ function ReportsSection({ onComingSoon }: { onComingSoon: () => void }) {
             className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight"
             style={{ fontFamily: "'Georgia', serif" }}
           >
-            Hasil Liputan &amp; Temuan
+            Hasil Liputan &amp; Temuan Sea Lens
           </h2>
-        </div>
+        </motion.div>
         
-        <div className="md:w-1/2">
+        <motion.div variants={fadeInUp} className="md:w-1/2">
           <p className="text-gray-600 text-base leading-relaxed md:text-justify">
             Kami menyajikan laporan mendalam dari lapangan yang didokumentasikan
-            bersama komunitas pesisir Sumatera Barat. Baca investigasi terbaru kami
-            mengenai krisis ekosistem laut yang membutuhkan perhatian segera.
+            bersama komunitas pesisir Sumatera Barat. Baca investigasi terbaru dari 
+            ekspedisi Resonansi Bahari yang membutuhkan perhatian segera.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-8 items-start sm:items-center w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        className="flex flex-col sm:flex-row gap-3 mb-8 items-start sm:items-center w-full"
+      >
         <div className="flex gap-2 overflow-x-auto pb-2 flex-1 w-full hide-scrollbar snap-x">
           {filterTabs.map((tab) => (
             <button
@@ -637,22 +766,35 @@ function ReportsSection({ onComingSoon }: { onComingSoon: () => void }) {
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        variants={staggerContainer}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+      >
         {(filtered.length > 0 ? filtered : REPORT_CARDS).map((card) => (
-          <ReportCard key={card.id} card={card} />
+          <motion.div variants={fadeInUp} key={card.id}>
+            <ReportCard card={card} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="mt-12 flex justify-center">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="mt-12 flex justify-center"
+      >
         <button 
           onClick={onComingSoon}
           className="border border-gray-200 bg-white text-gray-700 font-semibold text-sm px-8 py-3.5 rounded-full hover:bg-gray-50 hover:border-gray-300 shadow-sm transition flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           Lihat Semua Publikasi <ArrowRight size={16} />
         </button>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -714,29 +856,50 @@ function ReportCard({ card }: { card: ReportCard }) {
 function CtaSection({ onComingSoon }: { onComingSoon: () => void }) {
   return (
     <section className="relative py-24 lg:py-32 overflow-hidden bg-gray-950 px-5">
-      <img
+      <motion.img
+        initial={{ scale: 1.2, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 0.3 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5 }}
         src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1800&q=80"
         alt="Ocean"
-        className="absolute inset-0 w-full h-full object-cover opacity-30"
+        className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-br from-teal-900/70 to-gray-950/90" />
-      <div className="relative z-10 max-w-3xl mx-auto text-center">
-        <p className="text-teal-400 text-xs sm:text-sm font-semibold tracking-[0.15em] sm:tracking-widest uppercase mb-4">
+      <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+        className="relative z-10 max-w-3xl mx-auto text-center"
+      >
+        <motion.p 
+          variants={fadeInUp}
+          className="text-teal-400 text-xs sm:text-sm font-semibold tracking-[0.15em] sm:tracking-widest uppercase mb-4"
+        >
           Bergabunglah Bersama Kami
-        </p>
-        <h2
+        </motion.p>
+        <motion.h2
+          variants={fadeInUp}
           className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-6"
           style={{ fontFamily: "'Georgia', serif" }}
         >
           Suara Laut
           <br />
           Butuh Penceritanya
-        </h2>
-        <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
+        </motion.h2>
+        <motion.p 
+          variants={fadeInUp}
+          className="text-white/70 text-base sm:text-lg leading-relaxed mb-10 max-w-2xl mx-auto"
+        >
           Daftarkan diri sebagai jurnalis komunitas, fotografer bawah laut, atau
-          relawan riset lapangan. Bersama kita angkat krisis ini ke permukaan.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          relawan riset lapangan. Bersama Sea Lens, mari kita ciptakan resonansi bahari 
+          yang mampu mengangkat krisis ini ke permukaan.
+        </motion.p>
+        <motion.div 
+          variants={fadeInUp}
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+        >
           <a
             href="#kontak"
             onClick={(e) => {
@@ -753,8 +916,8 @@ function CtaSection({ onComingSoon }: { onComingSoon: () => void }) {
           >
             Pelajari Proyek
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
